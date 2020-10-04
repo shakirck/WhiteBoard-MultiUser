@@ -1,0 +1,32 @@
+.App {
+  overflow: hidden;
+}
+#canvas {
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+.ToolBox {
+  display: flex;
+}
+.colors {
+  width: 25px;
+  height: 25px;
+  display: inline-block;
+}
+#black {
+  background-color: black;
+}
+#red {
+  background-color: red;
+}
+#green {
+  background-color: green;
+}
+#blue {
+  background-color: blue;
+}
+#purple {
+  background-color: purple;
+}
