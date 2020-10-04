@@ -12,6 +12,8 @@ export default function Canvas() {
   const [elements, setelements] = useState([]);
   const [recieved, setRecieved] = useState([]);
   const [currentElement, setcurrentElement] = useState();
+  const [addImage, setAddImage] = useState();
+
   const fillRef = useRef();
   const [tool, setTool] = useState("rectangle");
   useEffect(() => {
@@ -19,12 +21,26 @@ export default function Canvas() {
     const context = canvas.getContext("2d");
     context.clearRect(0, 0, window.innerWidth, window.innerHeight);
     elements.forEach((element) => {
-      canvasDraw(element, context)();
+      if (element.type !== "image") {
+        canvasDraw(element, context)();
+      } else {
+        const { x1, y1, x2, y2, img } = element;
+        const image = document.createElement("img");
+        image.src = img;
+        context.drawImage(image, x1, y1, x2 - x1, y2 - y1);
+      }
     });
     recieved.forEach((element) => {
-      canvasDraw(element, context)();
+      if (element.type !== "image") {
+        canvasDraw(element, context)();
+      } else {
+        const { x1, y1, x2, y2, img } = element;
+        const image = document.createElement("img");
+        image.src = img;
+        context.drawImage(image, x1, y1, x2 - x1, y2 - y1);
+      }
     });
-    if (currentElement) {
+    if (currentElement && currentElement.type !== "image") {
       canvasDraw(currentElement, context)();
     }
     socket.on("drawing", (data) => {
@@ -34,33 +50,52 @@ export default function Canvas() {
       setRecieved((prev) => [...new Set([...prev, data])]);
     });
   }, [elements, currentElement, recieved]);
-
   const handleMouseDown = (e) => {
     const { clientX, clientY } = e;
     setdrawing(true);
-    setcurrentElement({
-      id: uuid(),
-      color,
-      fill: fillRef.current.checked,
-      type: tool,
-      x1: clientX,
-      y1: clientY - 25,
-    });
+    if (tool !== "brush" && tool !== "image") {
+      setcurrentElement({
+        id: uuid(),
+        color,
+        fill: fillRef.current.checked,
+        type: tool,
+        x1: clientX,
+        y1: clientY - 25,
+      });
+    }
+
+    if (tool === "image") {
+      setcurrentElement((prev) => {
+        return {
+          ...prev,
+          type: tool,
+          id: uuid(),
+          x1: clientX,
+          y1: clientY - 25,
+          img: addImage,
+        };
+      });
+    }
   };
   const handleMouseMove = (e) => {
     if (!drawing) return;
     const { clientX, clientY } = e;
 
-    setcurrentElement((prev) => {
-      return { ...prev, x2: clientX, y2: clientY - 25 };
-    });
+    if (tool !== "brush") {
+      setcurrentElement((prev) => {
+        return { ...prev, x2: clientX, y2: clientY - 25 };
+      });
+    }
   };
   const handleMouseUp = () => {
     setdrawing(false);
     setelements((prev) => [...prev, currentElement]);
     socket.emit("drawing", currentElement);
   };
-
+  const setUrl = (image) => {
+    setAddImage(image);
+    setTool("image");
+  };
   return (
     <>
       <ToolBox
@@ -68,6 +103,7 @@ export default function Canvas() {
         setTool={setTool}
         setColor={setColor}
         fillref={fillRef}
+        setUrl={setUrl}
       />
       <canvas
         ref={canvasRef}
@@ -83,6 +119,8 @@ export default function Canvas() {
 }
 
 const canvasDraw = (element, context) => {
+  if (!element) return;
+
   context.strokeStyle = element.color;
   const drawRect = () => {
     const { x1, y1, x2, y2 } = element;
@@ -100,7 +138,10 @@ const canvasDraw = (element, context) => {
     context.lineTo(x2, y2);
     context.stroke();
   };
-
+  const drawImage = () => {
+    const { x1, y1, x2, y2, img } = element;
+  };
+  if (element.type === "image") return;
   if (element.type === "rectangle" && !element.fill) return drawRect;
   if (element.type === "rectangle") return drawRectFill;
   if (element.type === "line") return drawLine;
