@@ -9,11 +9,38 @@
 
 .ToolBox {
   display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+.ToolBox input[type="radio"],
+input[type="checkbox"] {
+  display: none;
+}
+.ToolBox label {
+  width: 50px;
+  height: 50px;
+  padding: 10px;
+}
+.ToolBox label img {
+  width: 100%;
+}
+button {
+  width: 50px;
+  height: 40px;
+  background-color: none;
+  border: none;
+}
+button img {
+  width: 100%;
 }
 .colors {
   width: 25px;
   height: 25px;
   display: inline-block;
+}
+
+.active {
+  background-color: rgba(26, 240, 55, 0.616);
 }
 #black {
   background-color: black;

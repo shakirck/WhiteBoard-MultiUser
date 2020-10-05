@@ -96,6 +96,11 @@ export default function Canvas() {
     setAddImage(image);
     setTool("image");
   };
+  const clearState = () => {
+    setelements([]);
+    setRecieved([]);
+    setcurrentElement();
+  };
   return (
     <>
       <ToolBox
@@ -104,6 +109,7 @@ export default function Canvas() {
         setColor={setColor}
         fillref={fillRef}
         setUrl={setUrl}
+        clear={clearState}
       />
       <canvas
         ref={canvasRef}
