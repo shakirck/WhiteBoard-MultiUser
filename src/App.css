@@ -8,9 +8,14 @@
 }
 
 .ToolBox {
+  position: absolute;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-around;
+  justify-content: center;
+  width: 100px;
+  background-color: white;
+
 }
 .ToolBox input[type="radio"],
 input[type="checkbox"] {
@@ -21,8 +26,11 @@ input[type="checkbox"] {
   height: 50px;
   padding: 10px;
 }
+.ToolBox div{
+}
 .ToolBox label img {
-  width: 100%;
+  /* width: 100%; */
+  width: 50%;
 }
 button {
   width: 50px;
